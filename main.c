@@ -2,19 +2,40 @@
 #include <stdio.h>
 
 int	merge_sort(int *sorted, int *array, int start, int end);
-int	ft_arrprint(int *a, int n);
+int	ft_arrprint(int *a, int start, int end);
 int	copy(int *dst, int *src, int start, int end);
+int	*parse(int argc, char **argv);
 
-int	main(void)
+int	main(int argc, char **argv)
 {
-	int	a[] = {0, -4, 2, 3, 5, 1, 9, 8};
-	int	*b;
+	int	*array;
+	int	*buf;
 
-	b = (int *)malloc(sizeof(int) * 8);
-	ft_arrprint(a, 8);
-	merge_sort(b, a, 0, 8);
-	ft_arrprint(a, 8);
+	array = parse(argc, argv);
+	if (array == NULL)
+		return (0);
+	buf = (int *)malloc(sizeof(int) * (argc - 1));
+	ft_arrprint(array, 0, argc - 1);
+	merge_sort(buf, array, 0, argc - 1);
+	free(buf);
+	ft_arrprint(array, 0, argc - 1);
+	free(array);
 	return (0);
+}
+
+int	*parse(int argc, char **argv)
+{
+	int	*array;
+	int	i;
+
+	if (argc < 2)
+		return (NULL);
+	array = (int *)malloc(sizeof(int) * (argc - 1));
+	argv++;
+	i = 0;
+	while (i < argc - 1)
+		array[i++] = atoi(*(argv++));
+	return (array);
 }
 
 int	merge(int *sorted, int *array, int start, int end)
@@ -24,7 +45,7 @@ int	merge(int *sorted, int *array, int start, int end)
 	int	j;
 	int	k;
 
-	mid = (end - start) / 2;
+	mid = (end + start) / 2;
 	i = start;
 	j = mid;
 	k = start;
@@ -39,7 +60,11 @@ int	merge(int *sorted, int *array, int start, int end)
 		sorted[k++] = array[i++];
 	while (j < end)
 		sorted[k++] = array[j++];
-	copy(array, sorted, start, end); 
+	while (start < end)
+	{
+		array[start] = sorted[start];
+		start++;
+	}
 	return (0);
 }
 
@@ -47,21 +72,14 @@ int	merge_sort(int *sorted, int *array, int start, int end)
 {
 	int	mid;
 
-	mid = 1 + (end - start) / 2;
-	if (end - start > 2)
+	if (end - start > 1)
 	{
+		mid = (end + start) / 2;
 		merge_sort(sorted, array, mid, end);
 		merge_sort(sorted, array, start, mid);
 		merge(sorted, array, start, end);
 	}
 	return (0);
-}
-
-int	min(int a, int b)
-{
-	if (a < b)
-		return (a);
-	return (b);
 }
 
 int	copy(int *dst, int *src, int start, int end)
@@ -79,15 +97,9 @@ int	copy(int *dst, int *src, int start, int end)
 	return (0);
 }
 
-int	ft_arrprint(int *a, int n)
+int	ft_arrprint(int *a, int start, int end)
 {
-	int	i;
-
-	i = 0;
-	while (i < n)
-	{
-		printf("%d\n", a[i]);
-		i++;
-	}
+	while (start < end)
+		printf("%d\n", a[start++]);
 	return (0);
 }
